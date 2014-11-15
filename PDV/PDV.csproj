@@ -849,6 +849,7 @@
     <Compile Include="Controllers\FornecedorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProdutoController.cs" />
+    <Compile Include="Controllers\ProdutonovoController.cs" />
     <Compile Include="Controllers\TesteController.cs" />
     <Compile Include="Controllers\UsuarioController.cs" />
     <Compile Include="DAL\Contexto.cs" />
@@ -1039,6 +1040,7 @@
     <Content Include="Scripts\kendo\kendo.view.min.js.map" />
     <Content Include="Scripts\kendo\kendo.web.min.js.map" />
     <Content Include="Scripts\kendo\kendo.window.min.js.map" />
+    <Content Include="Views\Produtonovo\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
