@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -47,9 +48,15 @@ namespace PDV.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EditingPopup_Destroy([DataSourceRequest] DataSourceRequest request, Produto product)
         {
-            if (product != null)
+            //if (product.ProdutoID == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            Produto produto = db.Produtos.Find(product.ProdutoID);
+            if (produto != null)
             {
-                db.Produtos.Remove(product);
+                db.Produtos.Remove(produto);
+                db.SaveChanges();
 
             }
 
