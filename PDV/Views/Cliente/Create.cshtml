@@ -1,5 +1,4 @@
 ﻿@model PDV.Models.Cliente
-
 @{
     ViewBag.Title = "Create";
 }
@@ -14,6 +13,14 @@
         <h4>Cliente</h4>
         <hr />
         @Html.ValidationSummary(true)
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Endereco.Logradouro, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Endereco.Logradouro)
+                @Html.ValidationMessageFor(model => model.Endereco.Logradouro)
+            </div>
+        </div> 
 
         <div class="form-group">
             @Html.LabelFor(model => model.Email, new { @class = "control-label col-md-2" })

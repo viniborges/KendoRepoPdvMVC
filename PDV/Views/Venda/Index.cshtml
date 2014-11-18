@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PDV.Models.Venda>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Usuario.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ClienteId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataMovimento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ValorTotalVenda)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Usuario.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ClienteId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataMovimento)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ValorTotalVenda)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.VendaId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.VendaId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.VendaId })
+        </td>
+    </tr>
+}
+
+</table>

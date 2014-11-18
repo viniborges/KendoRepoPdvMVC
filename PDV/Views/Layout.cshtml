@@ -3,26 +3,24 @@
 
 @{
     Layout = null;
-    
+
 }
-
 <!DOCTYPE html>
-
 <html lang="pt-br">
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>Projeto PDV - @ViewBag.Title</title>
-        @*<script src="@Url.Content("~/Scripts/jquery-2.1.1.min.js")"></script>*@
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/kendo")
-        @Styles.Render("~/Content/kendo/css")
-        <link href="@Url.Content("~/Content/bootstrap.min.css")"rel="stylesheet" />
-        <style>
-            body {
-                padding-top: 60px;
-            }
-        </style>
-    </head>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Projeto PDV - @ViewBag.Title</title>
+    @*<script src="@Url.Content("~/Scripts/jquery-2.1.1.min.js")"></script>*@
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/kendo")
+    @Styles.Render("~/Content/kendo/css")
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+    <style>
+        body {
+            padding-top: 60px;
+        }
+    </style>
+</head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -31,17 +29,38 @@
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
+                    <li >@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Cadastros <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Produtos","Index", "Produto")</li>
+                            <li class="divider"></li>
+                            <li><a href="#">@Html.ActionLink("Fornecedores", "Index", "Fornecedor")</a></li>
+                            <li><a href="#">@Html.ActionLink("Clientes", "Index", "Cliente")</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Usuário</a></li>
+                        </ul>
+                    </li>
+                    <li ><a href="#">Entrada de Mercadoria</a></li>
+                    <li><a href="#">Pedido de Venda</a></li>
+                    <li class="dropdown pull-right">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Perfil <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Editar</a></li>
+                            <li><a href="#">Sair</a></li>
+
+                        </ul>
+                    </li>
                 </ul>
+                
             </div>
         </div>
     </div>
     <div class="container">
         @RenderBody()
         @*@(Html.Kendo().DatePicker().Name("datepicker").Value(DateTime.Today))
-        @(Html.Kendo().Button().Name("btt"))*@
+            @(Html.Kendo().Button().Name("btt"))*@
     </div>
-
     @*<script src="@Url.Content("~/Scripts/jquery-2.1.1.min.js")"></script>*@
     <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
     @RenderSection("script", required: false);

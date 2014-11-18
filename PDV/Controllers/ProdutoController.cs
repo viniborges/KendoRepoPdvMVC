@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 using PDV.Models;
 using PDV.DAL;
 
@@ -15,115 +17,63 @@ namespace PDV.Controllers
     public class ProdutoController : BaseController
     {
         private Contexto db = new Contexto();
-
-        // GET: /Produto/
-        public async Task<ActionResult> Index()
-        {
-            return View(await db.Produtos.ToListAsync());
-        }
-
-        // GET: /Produto/Details/5
-        public async Task<ActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produto produto = await db.Produtos.FindAsync(id);
-            if (produto == null)
-            {
-                return HttpNotFound();
-            }
-            return View(produto);
-        }
-
-        // GET: /Produto/Create
-        public ActionResult Create()
+        public ActionResult Index()
         {
             return View();
         }
-
-        // POST: /Produto/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include="ProdutoID,Descricao,PrecoCusto,Qtde,PrecoVenda")] Produto produto)
+        public ActionResult Produtos_Read([DataSourceRequest]DataSourceRequest request)
         {
-            if (ModelState.IsValid)
-            {
-                db.Produtos.Add(produto);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-
-            return View(produto);
+            return Json(GetProdutos().ToDataSourceResult(request));
         }
 
-        // GET: /Produto/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        private static IEnumerable<Produto> GetProdutos()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produto produto = await db.Produtos.FindAsync(id);
-            if (produto == null)
-            {
-                return HttpNotFound();
-            }
-            return View(produto);
+            Contexto db = new Contexto();
+            return db.Produtos.ToList();
         }
 
-        // POST: /Produto/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include="ProdutoID,Descricao,PrecoCusto,Qtde,PrecoVenda")] Produto produto)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult EditingPopup_Create([DataSourceRequest] DataSourceRequest request, Produto product)
         {
-            if (ModelState.IsValid)
+            if (product != null && ModelState.IsValid)
             {
-                db.Entry(produto).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                db.Produtos.Add(product);
+                db.SaveChangesAsync();
             }
-            return View(produto);
+
+            return Json(new[] { product }.ToDataSourceResult(request, ModelState));
         }
 
-        // GET: /Produto/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult EditingPopup_Destroy([DataSourceRequest] DataSourceRequest request, Produto product)
         {
-            if (id == null)
+            //if (product.ProdutoID == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            Produto produto = db.Produtos.Find(product.ProdutoID);
+            if (produto != null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                db.Produtos.Remove(produto);
+                db.SaveChanges();
+
             }
-            Produto produto = await db.Produtos.FindAsync(id);
-            if (produto == null)
-            {
-                return HttpNotFound();
-            }
-            return View(produto);
+
+            return Json(new[] { product }.ToDataSourceResult(request, ModelState));
         }
 
-        // POST: /Produto/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult EditingPopup_Update([DataSourceRequest] DataSourceRequest request, Produto product)
         {
-            Produto produto = await db.Produtos.FindAsync(id);
-            db.Produtos.Remove(produto);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            if (product != null && ModelState.IsValid)
+            {
+                db.Entry(product).State = EntityState.Modified;
+                db.SaveChangesAsync();
+
+            }
+
+            return Json(new[] { product }.ToDataSourceResult(request, ModelState));
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

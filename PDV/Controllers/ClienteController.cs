@@ -50,7 +50,7 @@ namespace PDV.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include="PessoaId,Email,CPFCNPJ,Nome,ClienteId,Contato,UltimaVenda")] Cliente cliente)
+        public async Task<ActionResult> Create([Bind(Include = "PessoaId,Email,CPFCNPJ,Nome,ClienteId,Contato,UltimaVenda,Logradouro")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {

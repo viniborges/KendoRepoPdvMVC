@@ -1,51 +1,67 @@
-﻿@model IEnumerable<PDV.Models.Produto>
-
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Cadastro de Produtos";
 }
 
-<h2>Index</h2>
+<h2>Cadastro de Produtos</h2>
+@using Kendo.Mvc.UI
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Descricao)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PrecoCusto)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Qtde)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PrecoVenda)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Descricao)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PrecoCusto)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Qtde)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PrecoVenda)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ProdutoID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ProdutoID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ProdutoID })
-        </td>
-    </tr>
-}
-
-</table>
+<div id="ProdutosGrid">
+    @(Html.Kendo().Grid<PDV.Models.Produto>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ProdutoID).Width(75);
+            columns.Bound(c => c.Descricao).Width(230);
+            columns.Bound(c => c.Qtde).Width(100);
+            columns.Bound(c => c.PrecoVenda).Width(115);
+            columns.Bound(c => c.PrecoVenda).Width(115);
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(160);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp))
+        .ToolBar(toolbar => toolbar.Create())
+        .Selectable(selectable => selectable
+            .Mode(GridSelectionMode.Multiple))
+        .HtmlAttributes(new { style = "height: 380px;" })
+        .Scrollable()
+        .Groupable()
+        .Sortable()
+        .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+        .Pageable(pageable => pageable
+            .Refresh(true)  
+            .PageSizes(true)
+            .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(10)
+            .Events(events => events.Error("error_handler"))
+            .Model(model => model.Id(p => p.ProdutoID))
+            .Create(update => update.Action("EditingPopup_Create", "Produtonovo"))
+            .Read(read => read.Action("Produtos_Read", "Produtonovo"))
+            .Update(update => update.Action("EditingPopup_Update", "Produtonovo"))
+            .Destroy(update => update.Action("EditingPopup_Destroy", "Produtonovo"))
+        )
+    )
+</div>
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+</script>
+<style scoped>
+    #ProdutosGrid {
+        width: 1100px;
+        height: 396px;
+        margin: 20px auto 0;
+        padding: 51px 4px 0 4px;
+    }
+</style>

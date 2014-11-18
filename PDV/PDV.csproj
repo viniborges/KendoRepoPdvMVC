@@ -852,6 +852,7 @@
     <Compile Include="Controllers\ProdutonovoController.cs" />
     <Compile Include="Controllers\TesteController.cs" />
     <Compile Include="Controllers\UsuarioController.cs" />
+    <Compile Include="Controllers\VendaController.cs" />
     <Compile Include="DAL\Contexto.cs" />
     <Compile Include="DAL\RepositorioCookies.cs" />
     <Compile Include="DAL\RepositorioCriptografia.cs" />
@@ -1041,6 +1042,11 @@
     <Content Include="Scripts\kendo\kendo.web.min.js.map" />
     <Content Include="Scripts\kendo\kendo.window.min.js.map" />
     <Content Include="Views\Produtonovo\Index.cshtml" />
+    <Content Include="Views\Venda\Create.cshtml" />
+    <Content Include="Views\Venda\Delete.cshtml" />
+    <Content Include="Views\Venda\Details.cshtml" />
+    <Content Include="Views\Venda\Edit.cshtml" />
+    <Content Include="Views\Venda\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
