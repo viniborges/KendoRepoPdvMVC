@@ -1,17 +1,150 @@
-﻿
-@model PDV.Models.Venda
+﻿@model PDV.Models.Venda
+<script src="../../Scripts/json2.js" type="text/javascript"></script>
+<script src="../../Scripts/DataTables-1.10.3/jquery.dataTables.js" type="text/javascript"></script>
+<script src="../../Scripts/DataTables-1.10.3/dataTables.tableTools.js" type="text/javascript"></script>
+<link href="../../Content/DataTables-1.10.3/css/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/DataTables-1.10.3/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/DataTables-1.10.3/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css" />
 
 
-@{
-    ViewBag.Title = "Create";
-}
+<h2>@ViewBag.Title</h2>
 
-<h2>Create</h2>
+<script type="text/javascript">
 
-@using (Html.BeginForm()) 
+
+    // Função usada para deletar um item da grid
+    function DeleteRow() {
+
+        // Usa o plugin do DataTables.TableTools  para selecionar uma linha
+        var oTT = TableTools.fnGetInstance('tbl'); // instancia da table
+        var sRow = oTT.fnGetSelected(); // seleciona a linha
+
+
+        $('#ProdutoId').val($.trim(sRow[0].cells[0].innerHTML.toString()));
+        $('#PrecoUnitarioVenda').val($.trim(sRow[0].cells[2].innerHTML.toString()));
+        $('#Qtde').val(jQuery.trim(sRow[0].cells[1].innerHTML.toString()));
+        $('#PrecoTotalItem').val($.trim(sRow[0].cells[2].innerHTML.toString()));
+        $('#ValorDesconto').val($.trim(sRow[0].cells[2].innerHTML.toString()));
+
+        $('.tbl').dataTable().fnDeleteRow(sRow[0]);
+
+    }
+
+
+
+    $(document).ready(function () {
+
+        $('.tbl').dataTable({
+            "sDom": 'T<"clear">lfrtip',
+            "oTableTools": {
+                "aButtons": [],
+                "sRowSelect": "single"
+            },
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false
+        });
+
+        $('#DataMovimento').datepicker();
+
+        var oTable = $('.tbl').dataTable();
+    });
+
+
+
+
+    // Função usada para adicionar um item na lista de vendaitem
+    function Add() {
+
+        // Adding item to table
+        $('.tbl').dataTable().fnAddData([$('#ProdutoId').val(), $('#PrecoUnitarioVenda').val(), $('#Qtde').val(), $('#PrecoTotalItem').val(), $('#ValorDesconto').val()]);
+
+        // Making Editable text empty
+        $('#ProdutoId').val("")
+        $('#PrecoUnitarioVenda').val("")
+        $('#Qtde').val("")
+        $('#PrecoTotalItem').val("")
+        $('#ValorDesconto').val("")
+    }
+
+
+
+    //Função responsável para enviar os dados em JSON para VendaController
+    function Sales_save() {
+        // Passo 1: le os dados da View e cria um objeto JSON
+
+        // cria JSON do objeto de Venda
+        var salessub = { "VendaId": "", "ProdutoId": "", "PrecoUnitarioVenda": "", "Qtde": "", "PrecoTotalItem": "", "ValorDesconto": "" };
+
+
+        //cria JSON do objeto de vendaItem
+        var salesmain = { "VendaId": "", "ClienteId": "", "DataMovimento": "", "UsuarioId": "", "ValorTotalVenda": "", "VendaItem": [] };
+
+        // SDefine os valores de Venda
+        salesmain.VendaId = $("#VendaId").val();
+        salesmain.ClienteId = $("#ClienteId").val();
+        salesmain.DataMovimento = $("#DataMovimento").val();
+        salesmain.UsuarioId = $("#UsuarioId").val();
+        salesmain.ValorTotalVenda = $("#ValorTotalVenda").val();
+
+
+        // obtem os dados da tabela que serão usados na vendaitem
+        var oTable = $('.tbl').dataTable().fnGetData();
+
+
+
+        for (var i = 0; i < oTable.length; i++) {
+
+            // Verifica se é a view de edição para editar
+            if ($('h2').text() == "Edit") {
+                salessub.VendaId = $('#VendaId').val();
+            }
+            else {
+                salessub.VendaId = 0;
+            }
+
+            // define os valores do venda item
+            salessub.ProdutoId = oTable[i][0];
+            salessub.PrecoUnitarioVenda = oTable[i][1];
+            salessub.Qtde = oTable[i][2];
+            salessub.PrecoTotalItem = oTable[i][3];
+
+            // adiciona a lista de itens na venda
+            salesmain.VendaItem.push(salessub);
+            salessub = { "ProdutoId": "", "PrecoUnitarioVenda": "", "Qtde": "", "PrecoTotalItem": "", "ValorDesconto": "" };
+
+
+        }
+
+        // Passo 2: Ajax Post
+        //Usa AJAX Post para salvar/atualizar a informação
+        $.ajax({
+            url: '/Venda/Create',
+            data: JSON.stringify(salesmain),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+
+                if (result.Success == "1") {
+                    window.location.href = "/Venda/index";
+                }
+                else {
+                    alert(result.ex);
+                }
+            }
+        });
+
+
+    }
+
+</script>
+
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Venda</h4>
         <hr />
@@ -48,12 +181,78 @@
                 @Html.ValidationMessageFor(model => model.ValorTotalVenda)
             </div>
         </div>
+        
+        <br />
 
-        <div class="form-group">
+        <fieldset>
+            <legend>Add Item</legend>
+
+
+            <label>ItemName :</label>
+            @Html.TextBox("ProdutoId")
+            <label>Qty :</label>
+            @Html.TextBox("PrecoUnitarioVenda")
+            <label>Sales Price :</label>
+            @Html.TextBox("Qtde")
+            <label>Sales Price :</label>
+            @Html.TextBox("PrecoTotalItem")
+            <label>Sales Price :</label>
+            @Html.TextBox("ValorDesconto")
+            <input type="button" value="Add" onclick="Add()" />
+            <br />
+            <br />
+
+            <table class="tbl" id="tbl">
+                <thead>
+                    <tr>
+                        <th>ProdutoId</th>
+                        <th>PrecoUnitarioVenda</th>
+                        <th>Qtde</th>
+                        <th>PrecoTotalItem</th>
+                        <th>ValorDesconto</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item1 in Model.VendaItem)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayTextFor(i => item1.ProdutoId)
+                                </td>
+                                <td>
+                                    @Html.DisplayTextFor(i => item1.PrecoUnitarioVenda)
+                                </td>
+                                <td>
+                                    @Html.DisplayTextFor(i => item1.Qtde)
+                                </td>
+                                <td>
+                                    @Html.DisplayTextFor(i => item1.PrecoTotalItem )
+                                </td>
+                                <td>
+                                    @Html.DisplayTextFor(i => item1.ValorDesconto)
+                                </td>
+
+
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+            <br />
+            <input type="button" value="Deletar item selecionado" onclick="DeleteRow()" />
+        </fieldset>
+        <input type="button" value="Registrar Venda" onclick="Sales_save()" />
+        @*<div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
-        </div>
+        </div>*@
     </div>
 }
 
